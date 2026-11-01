@@ -1,0 +1,15 @@
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+export const getBrands = async () => {
+    try {
+        const response = await fetch(`${API_URL}/brands`, {
+            next: { revalidate: 60 }
+        })
+        if (!response.ok) throw new Error("Brendlarni yuklab bo'lmadi");
+        const result = await response.json();
+        return result.data ?? [];
+    } catch (error) {
+        console.error("getBrands xatolik:", error);
+        return [];
+    }
+}

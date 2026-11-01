@@ -101,7 +101,7 @@ export default function ProductActions({
 
       <p className="mt-3 text-center text-xs text-gray-400">
         Jami:{" "}
-        {new Intl.NumberFormat("uz-UZ").format(price * quantity)} so'm
+        {(price * quantity).toLocaleString("en-US").replace(/,/g, " ")} so'm
       </p>
     </div>
   );

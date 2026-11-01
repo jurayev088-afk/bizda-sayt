@@ -1,7 +1,10 @@
-import React from 'react'
+import { redirect } from 'next/navigation'
 
-export default function CategoriDetail() {
-  return (
-    <div>CategoriDetail</div>
-  )
+type Props = {
+  params: Promise<{ slug: string }>
+}
+
+export default async function CategoriDetail({ params }: Props) {
+  const { slug } = await params
+  redirect(`/products/${slug}`)
 }

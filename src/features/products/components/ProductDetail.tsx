@@ -14,7 +14,7 @@ import { getProduct } from "../services/getProducts";
 
 
 const formatPrice = (price: number) =>
-  new Intl.NumberFormat("uz-UZ").format(price) + " so'm";
+  price.toLocaleString("en-US").replace(/,/g, " ") + " so'm";
 
 
 
@@ -24,9 +24,6 @@ export default async function ProductDetail({ id }: { id: string }) {
 
   const product = await getProduct(id)
 
-
-
-  console.log(product)
   if (!product || product.isActive === false) {
     return (
       <main className="flex min-h-[65vh] items-center justify-center bg-[#fafafa] px-4">
@@ -66,9 +63,9 @@ export default async function ProductDetail({ id }: { id: string }) {
 
   return (
     <main className="min-h-screen bg-[#fafafa]">
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-310 px-4 py-6">
         {/* Breadcrumb */}
-        <nav className="mb-6 flex flex-wrap items-center gap-2 text-sm text-gray-500">
+        {/* <nav className="mb-6 flex flex-wrap items-center gap-2 text-sm text-gray-500">
           <Link href="/" className="hover:text-[#399765]">
             Bosh sahifa
           </Link>
@@ -80,7 +77,7 @@ export default async function ProductDetail({ id }: { id: string }) {
           <span className="max-w-56 truncate text-gray-900">
             {product.name}
           </span>
-        </nav>
+        </nav> */}
 
         {/* Product section */}
         <section className="grid gap-8 lg:grid-cols-2 lg:gap-12">

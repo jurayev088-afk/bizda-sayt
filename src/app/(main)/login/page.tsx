@@ -1,7 +1,6 @@
-import React from 'react'
+import { redirect } from 'next/navigation'
 
 export default function Login() {
-  return (
-    <div>Login</div>
-  )
+  // Kirish header dagi modal orqali amalga oshiriladi
+  redirect('/')
 }

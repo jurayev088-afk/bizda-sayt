@@ -1,51 +1,133 @@
-import React from 'react'
-import Image from 'next/image'
-import { FaLocationDot } from "react-icons/fa6";
-import { FiSearch } from "react-icons/fi";
-import { FaUserAlt } from "react-icons/fa";
-import { SlBasket } from "react-icons/sl";
+"use client"
 
+import React, { useState } from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
+import { FiSearch } from "react-icons/fi"
+import { SlBasket } from "react-icons/sl"
+import { useQuery } from '@tanstack/react-query'
+import api from '../services/api/api'
+import { Category } from '../features/categories/types/categoryes'
+import { useMounted } from '../hooks/useMounted'
+import Register from './Register'
+import Wishlist from './Wishlist'
+import Cart from './Cart'
+
+const navLinks = [
+  { title: "Bosh sahifa", href: "/" },
+  { title: "Mahsulotlar", href: "/products" },
+  { title: "Biz haqimizda", href: "/about" },
+]
 
 export default function Header() {
+  const [search, setSearch] = useState("")
+  const router = useRouter()
+  const pathname = usePathname()
+  // Kategoriyalar client'da yuklanadi — hydration tugagunga qadar
+  // server bilan bir xil (bo'sh) ko'rsatamiz
+  const mounted = useMounted()
+
+  const { data: categories } = useQuery({
+    queryKey: ["header-categories"],
+    queryFn: () =>
+      api.get("/categories").then((res) => res?.data?.data ?? res?.data),
+    staleTime: 60 * 60 * 1000,
+  })
+
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const query = search.trim()
+    router.push(query ? `/products?search=${encodeURIComponent(query)}` : "/products")
+  }
+
   return (
-    <div className='border-b-[0.5px] border-[rgba(0,0,0,0.1)]'>
-      <div className=' max-w-300 w-full m-[0px_auto] h-22.5 flex items-center justify-between'>
-        <div className='flex gap-5'>
+    <header className="sticky top-0 z-50 w-full border-b border-gray-100 bg-white/95 backdrop-blur">
+      {/* Yuqori qator: logo, qidiruv, ikonkalar */}
+      <div className="mx-auto flex h-18 w-full max-w-310 items-center gap-3 px-4 sm:gap-5">
+        <Link href="/" className="shrink-0">
           <Image
-            src="/svg/logo.svg"
-            alt="Logo"
-            width={150}
-            height={50}
-            className='cursor-pointer'
+            src="/img/logo.png"
+            alt="Dealper"
+            width={130}
+            height={47}
+            priority
+            style={{ height: 40, width: "auto" }}
           />
-          <div className='flex items-center justify-center gap-1 border-r border-l border-black p-[0px_12px]'>
-            <FaLocationDot className='w-8 h-8' />
-            <div className='p-[0px_10px]'>
-              <p className='text-[12px]'>Deliver to</p>
-              <p className='text-[14px]'>Your address</p>
-            </div>
-          </div>
-          <select name="" id="" className='cursor-pointer'>
-            <option value="">UZB</option>
-            <option value="">ENG</option>
-          </select>
-        </div>
-        <div className='flex items-center gap-5'>
-          <form className='bg-[rgba(234,248,231,1)] flex items-center justify-center rounded-[200px] focus-within:bg-[#d2f3cc] transition-all duration-300 p-[6px_4px] cursor-pointer'>
-            <input type="text" placeholder="What you' re looking for" className=' min-w-85 w-full p-[0px_16px] outline-none' />
-            <button className='bg-white flex items-center justify-center gap-2 rounded-[200px] p-[8px_32px] cursor-pointer'>
-              <FiSearch /> Search
-            </button>
-          </form>
-          <div className='cursor-pointer'>
-            <FaUserAlt />
-          </div>
-          <div className='flex items-center justify-center gap-2 cursor-pointer'>
-            <SlBasket />Cart
-          </div>
+        </Link>
+
+        {/* Qidiruv */}
+        <form
+          onSubmit={onSubmit}
+          className="mx-auto hidden w-full max-w-md items-center gap-1 rounded-full bg-[#eaf8e7] py-1 pl-4 pr-1 transition focus-within:bg-[#d9f2d2] sm:flex"
+        >
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            type="text"
+            placeholder="Mahsulot qidirish..."
+            className="w-full bg-transparent text-sm outline-none"
+          />
+          <button
+            type="submit"
+            aria-label="Qidirish"
+            className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full bg-white text-gray-700 transition hover:text-[#399765]"
+          >
+            <FiSearch size={16} />
+          </button>
+        </form>
+
+        {/* Ikonkalar */}
+        <div className="ml-auto flex items-center gap-2 sm:gap-3">
+          <Wishlist />
+         <Cart/>
+          <Register />
         </div>
       </div>
-    </div>
 
+      {/* Pastki qator: navigatsiya va kategoriyalar */}
+      <div className="border-t border-gray-100">
+        <div className="scrollbar-hide mx-auto flex h-11 w-full max-w-310 items-center gap-1 overflow-x-auto px-4">
+          {navLinks.map((item) => {
+            const isActive = pathname === item.href
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`relative shrink-0 rounded-full px-3 py-1.5 text-sm font-medium transition ${
+                  isActive
+                    ? "text-[#399765]"
+                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                }`}
+              >
+                {item.title}
+                {isActive && (
+                  <span className="absolute inset-x-3 -bottom-[9px] h-0.5 rounded-full bg-[#4caf7d]" />
+                )}
+              </Link>
+            )
+          })}
+
+          {mounted && Array.isArray(categories) && categories.length > 0 && (
+            <>
+              <span className="mx-2 h-4 w-px shrink-0 bg-gray-200" />
+              {categories.map((cat: Category) => (
+                <Link
+                  key={cat.id}
+                  href={`/products/${cat.slug}`}
+                  className={`shrink-0 rounded-full px-3 py-1.5 text-sm transition ${
+                    pathname === `/products/${cat.slug}`
+                      ? "font-medium text-[#399765]"
+                      : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+                  }`}
+                >
+                  {cat.name}
+                </Link>
+              ))}
+            </>
+          )}
+        </div>
+      </div>
+    </header>
   )
 }

@@ -1,16 +1,22 @@
 import type { ReactNode } from "react";
-import { Geist, Geist_Mono } from "next/font/google";
+import {Lato, Geist } from "next/font/google";
 import "./globals.css";
 import { Metadata } from "next";
+import { cn } from "@/lib/utils";
+import AppProvider from "../providers/AppProvider";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
+
   metadataBase: new URL("https://dealport-web-4z5b.vercel.app/"),
   title: {
     default: "Dealper",
     template: "%s | Dealper",
   },
   description: "Dealper - Your one-stop shop for the best deals and discounts on a wide range of products. Find the latest offers and save big on your favorite items.",
-
+  icons:{icon:'/img/logo.png'}
+  ,
 
   openGraph: {
     type: "website",
@@ -30,15 +36,15 @@ export const metadata: Metadata = {
   },
   };
 
-  const geistSans = Geist({
-    variable: "--font-geist-sans",
-    subsets: ["latin"],
-  });
 
-  const geistMono = Geist_Mono({
+
+  const lato = Lato({
     variable: "--font-geist-mono",
     subsets: ["latin"],
+    weight:["100" , "300" ,"400" , "700" , "900" ]
   });
+
+
 
   export default function RootLayout({
     children,
@@ -48,9 +54,11 @@ export const metadata: Metadata = {
     return (
       <html
         lang="uz"
-        className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+        className={cn("h-full", "antialiased", lato.variable, "font-sans", geist.variable)}
       >
-        <body className="min-h-full flex flex-col">{children}</body>
+        <body className="min-h-full flex flex-col">
+          <AppProvider>{children}</AppProvider>
+        </body>
       </html>
     );
 }

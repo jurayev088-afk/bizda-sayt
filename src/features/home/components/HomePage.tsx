@@ -8,9 +8,10 @@ export default function HomePage() {
     <main>
       <HeroSection />
       <TrendingProducts />
+        <BestSelling />
       <StartExpolingNow />
-      <BestSelling />
-      <LimitedTimeDeal />
+    
+      {/* <LimitedTimeDeal /> */}
     </main>
   )
 }
