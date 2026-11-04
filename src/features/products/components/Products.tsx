@@ -24,6 +24,7 @@ function FilterFallback() {
 
 export default async function Products({ data, slug }: { data: Product[], slug: string }) {
   const [categories, brands] = await Promise.all([allCategoryes(), getBrands()])
+  
 
   return (
     <section className="my-4 flex items-start gap-4">

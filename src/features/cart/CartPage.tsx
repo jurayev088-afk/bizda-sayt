@@ -14,13 +14,12 @@ import {
   Minus,
   ShieldCheck,
   Truck,
-  ShoppingBag,
-  CreditCard,
 } from "lucide-react";
 
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import OrderSumma from "./components/OrderSumma";
 
 export default function CartPage() {
   // API hooks
@@ -31,6 +30,7 @@ export default function CartPage() {
   const { CartDelete, isPending: cartDeletePending } = useDeleteCart();
 
   const { CartDeleteId } = useDeleteCartId();
+
 
   // Loading states
   const [pendingQuantityId, setPendingQuantityId] = useState<string | null>(
@@ -45,11 +45,7 @@ export default function CartPage() {
   >([]);
 
   // Total price
-  const totalPrice = items.reduce(
-    (total: number, item: any) =>
-      total + (item.lineTotal ?? item.price * item.quantity),
-    0,
-  );
+
 
   // Quantity changes are stored locally until "Save changes" is clicked.
 
@@ -94,7 +90,8 @@ export default function CartPage() {
 
   const getCartQuantity = (id: string) =>
     cartCounter.find((item) => item.id === id)?.quantity ??
-    items.find((item: { id: string }) => item.id === id)?.quantity ?? 1;
+    items.find((item: { id: string }) => item.id === id)?.quantity ??
+    1;
 
   const updateCartQuantity = (id: string, change: 1 | -1) => {
     setCartCounter((prev) => {
@@ -236,7 +233,10 @@ export default function CartPage() {
                         <div className="flex h-9 items-center overflow-hidden rounded-lg border border-gray-200">
                           <button
                             onClick={() => updateCartQuantity(item.id, -1)}
-                            disabled={getCartQuantity(item.id) <= 1 || !!pendingQuantityId}
+                            disabled={
+                              getCartQuantity(item.id) <= 1 ||
+                              !!pendingQuantityId
+                            }
                             type="button"
                             className="flex h-full w-9 cursor-pointer items-center justify-center text-gray-600 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
                           >
@@ -339,58 +339,8 @@ export default function CartPage() {
           </section>
 
           {/* Order summary */}
-          <aside className="sticky top-5 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-bold text-gray-900">
-              Buyurtma xulosasi
-            </h2>
-
-            <div className="mt-6 space-y-4 border-b border-gray-100 pb-5">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">
-                  Mahsulotlar ({items.length})
-                </span>
-
-                <span className="font-semibold text-gray-900">
-                  {totalPrice.toLocaleString("uz-UZ")} so'm
-                </span>
-              </div>
-
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Yetkazib berish</span>
-
-                <span className="font-semibold text-[#4caf7d]">Keyinroq</span>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between py-5">
-              <span className="text-sm font-semibold text-gray-600">Jami:</span>
-
-              <span className="text-xl font-extrabold text-gray-900">
-                {totalPrice.toLocaleString("uz-UZ")} so'm
-              </span>
-            </div>
-
-            <button
-              type="button"
-              className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#4caf7d] text-sm font-bold text-white shadow-sm transition hover:bg-[#399765]"
-            >
-              Buyurtma berish
-              <ArrowRight size={17} />
-            </button>
-
-            <Link
-              href="/products"
-              className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 transition hover:bg-gray-50"
-            >
-              <ShoppingBag size={16} />
-              Xaridni davom ettirish
-            </Link>
-
-            <div className="mt-5 flex items-center justify-center gap-2 text-xs text-gray-400">
-              <CreditCard size={15} />
-              Xavfsiz to'lov tizimi
-            </div>
-          </aside>
+          <OrderSumma/>
+          
         </div>
       </div>
     </main>
@@ -399,4 +349,3 @@ export default function CartPage() {
 
 const deleteCartItem: never = null as never;
 deleteCartItem;
-

@@ -23,7 +23,8 @@ export default async function ProductDetail({ id }: { id: string }) {
 
 
   const product = await getProduct(id)
-
+  console.log(product);
+  
   if (!product || product.isActive === false) {
     return (
       <main className="flex min-h-[65vh] items-center justify-center bg-[#fafafa] px-4">
